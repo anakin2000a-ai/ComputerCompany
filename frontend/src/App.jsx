@@ -10,6 +10,12 @@ import ContactPage from './pages/ContactPage';
 import { getDesignTokens } from './theme/theme';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminDashboard from './components/admin/AdminDashboard';
+import AdminLayout from './layouts/AdminLayout';
+import HeroCmsManager from './components/admin/HeroCmsManager';
+import ProtectedRoute from './components/ProtectedRoute';
+import HomeSectionCmsManager from './components/admin/HomeSectionCmsManager';
+import FeatureCardCmsManager from './components/admin/FeatureCardCmsManager';
 
 export default function App() {
   const [mode, setMode] = useState('dark');
@@ -60,18 +66,29 @@ export default function App() {
       <CssBaseline />
 
       <BrowserRouter>
-        <Routes>
-          <Route
-          path="/"
-          element={<MainLayout mode={mode} toggleMode={toggleColorMode} />}
-        >
+       <Routes>
+        {/* PUBLIC WEBSITE ROUTE GROUP (Uses MainLayout) */}
+        <Route path="/" element={<MainLayout mode={mode} toggleMode={toggleColorMode} />}>
           <Route index element={<HomePage mode={mode} />} />
           <Route path="about" element={<AboutPage mode={mode} />} />
           <Route path="contact" element={<ContactPage mode={mode} />} />
-          <Route path="login" element={<LoginPage mode={mode} />} /> {/* <- Added Login Route */}
-          <Route path="register" element={<RegisterPage mode={mode} />} /> {/* <- Added Register Route */}
-        </Route>
-        </Routes>
+          <Route path="login" element={<LoginPage mode={mode} />} /> 
+          <Route path="register" element={<RegisterPage mode={mode} />} /> 
+        </Route> {/* <- Public group ends here cleanly */}
+
+        {/* INDEPENDENT ADMIN ROUTE GROUP (Does NOT use MainLayout) */}
+       {/* Dedicated Admin Router Shell Scope */}
+  {/* 🔒 Protected Admin Group */}
+    <Route element={<ProtectedRoute />}>
+      <Route path="/admin" element={<AdminLayout mode={mode} />}>
+        <Route path="dashboard" element={<AdminDashboard mode={mode} />} />
+        <Route path="hero-sections" element={<HeroCmsManager mode={mode} />} />
+        <Route path="home-sections" element={<HomeSectionCmsManager mode={mode} />} />
+        <Route path="feature-cards" element={<FeatureCardCmsManager mode={mode} />} />
+    </Route>
+    </Route>
+    
+      </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );

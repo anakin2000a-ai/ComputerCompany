@@ -1,31 +1,34 @@
 import { Box, Container, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORT THE NAVIGATE HOOK
 import DynamicForm from '../components/DynamicForm';
 
 export default function LoginPage({ mode }) {
   const isDark = mode === 'dark';
+  const navigate = useNavigate(); // 2. INITIALIZE THE NAVIGATE FUNCTION
 
   const loginFields = [
     { name: 'email', label: 'Email Address', type: 'email' },
     { name: 'password', label: 'Password', type: 'password' },
   ];
 
-  // HERE IS YOUR TOKEN MANAGER HANDLER 👇
   const handleLoginSuccess = (responsePayload) => {
     console.log('Full backend response payload:', responsePayload);
     
-    // 1. Extract token (Adjust based on your exact backend key name)
-    const token = responsePayload.token || responsePayload.access_token;
-    const user = responsePayload.user;
+    // Extract token based on your Laravel API response structure
+    const token = responsePayload.token || responsePayload.access_token || responsePayload.data?.token;
+    const user = responsePayload.user || responsePayload.data?.user;
 
     if (token) {
-      // 2. Store token in browser storage
+      // Store token and user in browser storage
       localStorage.setItem('authToken', token);
       if (user) localStorage.setItem('user', JSON.stringify(user));
       
-      console.log('Token successfully stored in localStorage.');
+      console.log('Token successfully stored in localStorage. Redirecting...');
       
-      // 3. Optional: Redirect your user here to a secure application page
-      // window.location.href = '/dashboard'; 
+      // 3. REDIRECT THE USER TO YOUR SECURE DASHBOARD ROUTE
+      navigate('/admin/dashboard'); 
+    } else {
+      console.error('Login reported success, but no token was found in the response payload.');
     }
   };
 
@@ -45,7 +48,6 @@ export default function LoginPage({ mode }) {
           successMessage="Login successful!"
           fields={loginFields}
           initialValues={{ email: '', password: '' }}
-          // ATTACH THE HANDLER FUNCTION HERE 👇
           onSuccess={handleLoginSuccess}
         />
       </Container>
