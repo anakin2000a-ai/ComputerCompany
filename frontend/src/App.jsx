@@ -18,6 +18,7 @@ import HomeSectionCmsManager from './components/admin/HomeSectionCmsManager';
 import FeatureCardCmsManager from './components/admin/FeatureCardCmsManager';
 import GeminiSearch from './components/AISearch';
 import AISearch from './components/AISearch';
+import AISearchText from './components/AISearchText';
 
 export default function App() {
   const [mode, setMode] = useState('dark');
@@ -78,6 +79,7 @@ export default function App() {
             <Route path="login" element={<LoginPage mode={mode} />} /> 
             <Route path="register" element={<RegisterPage mode={mode} />} /> 
             <Route path="Ai" element={<AISearch mode={mode} />} /> 
+            <Route path="AiText" element={<AISearchText mode={mode} />} /> 
           </Route>
 
           {/* 🔒 PROTECTED ADMIN GROUP */}

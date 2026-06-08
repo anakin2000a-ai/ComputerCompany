@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AIController;
 
 // يمكنك إضافته بدون حماية للتجربة، أو داخل ممر الـ sanctum إذا كان يتطلب تسجيل دخول
 Route::post('/ai/search', [AIController::class, 'search']);
+Route::post('/ai/search-audio', [AIController::class, 'searchAudio']);
 Route::prefix('v1')->group(function () {
 
     // public frontend API

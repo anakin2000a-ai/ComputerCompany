@@ -111,6 +111,13 @@ export default function Header({ mode, toggleMode }) {
           >
             AI Search
           </Button>
+              <Button
+            color="inherit"
+            onClick={() => navigate('/AiText')}
+            sx={{ fontWeight: 'bold' }}
+          >
+            AI Search Text
+          </Button>
           <IconButton
             onClick={handleThemeToggleClick}
             color="primary"
