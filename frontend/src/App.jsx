@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -16,79 +16,84 @@ import HeroCmsManager from './components/admin/HeroCmsManager';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeSectionCmsManager from './components/admin/HomeSectionCmsManager';
 import FeatureCardCmsManager from './components/admin/FeatureCardCmsManager';
+import GeminiSearch from './components/AISearch';
+import AISearch from './components/AISearch';
 
 export default function App() {
   const [mode, setMode] = useState('dark');
 
- const toggleColorMode = (event) => {
-  if (!document.startViewTransition) {
-    setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
-    return;
-  }
+  const toggleColorMode = (event) => {
+    if (!document.startViewTransition) {
+      setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+      return;
+    }
 
-  const x = event.clientX;
-  const y = event.clientY;
+    const x = event.clientX;
+    const y = event.clientY;
 
-  const endRadius = Math.hypot(
-    Math.max(x, window.innerWidth - x),
-    Math.max(y, window.innerHeight - y)
-  );
-
-  document.documentElement.style.setProperty('--x', `${x}px`);
-  document.documentElement.style.setProperty('--y', `${y}px`);
-  document.documentElement.style.setProperty('--r', `${endRadius}px`);
-
-  const transition = document.startViewTransition(() => {
-    setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
-  });
-
-  transition.ready.then(() => {
-    document.documentElement.animate(
-      {
-        clipPath: [
-          'circle(0px at var(--x) var(--y))',
-          'circle(var(--r) at var(--x) var(--y))',
-        ],
-      },
-      {
-        duration: 500,
-        easing: 'ease-in-out',
-        pseudoElement: '::view-transition-new(root)',
-      }
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
     );
-  });
-};
+
+    document.documentElement.style.setProperty('--x', `${x}px`);
+    document.documentElement.style.setProperty('--y', `${y}px`);
+    document.documentElement.style.setProperty('--r', `${endRadius}px`);
+
+    const transition = document.startViewTransition(() => {
+      setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            'circle(0px at var(--x) var(--y))',
+            'circle(var(--r) at var(--x) var(--y))',
+          ],
+        },
+        {
+          duration: 500,
+          easing: 'ease-in-out',
+          pseudoElement: '::view-transition-new(root)',
+        }
+      );
+    });
+  };
 
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* <AISearch /> */}
 
       <BrowserRouter>
-       <Routes>
-        {/* PUBLIC WEBSITE ROUTE GROUP (Uses MainLayout) */}
-        <Route path="/" element={<MainLayout mode={mode} toggleMode={toggleColorMode} />}>
-          <Route index element={<HomePage mode={mode} />} />
-          <Route path="about" element={<AboutPage mode={mode} />} />
-          <Route path="contact" element={<ContactPage mode={mode} />} />
-          <Route path="login" element={<LoginPage mode={mode} />} /> 
-          <Route path="register" element={<RegisterPage mode={mode} />} /> 
-        </Route> {/* <- Public group ends here cleanly */}
+        <Routes>
+          {/* PUBLIC WEBSITE ROUTE GROUP */}
+          <Route path="/" element={<MainLayout mode={mode} toggleMode={toggleColorMode} />}>
+            <Route index element={<HomePage mode={mode} />} />
+            <Route path="about" element={<AboutPage mode={mode} />} />
+            <Route path="contact" element={<ContactPage mode={mode} />} />
+            <Route path="login" element={<LoginPage mode={mode} />} /> 
+            <Route path="register" element={<RegisterPage mode={mode} />} /> 
+            <Route path="Ai" element={<AISearch mode={mode} />} /> 
+          </Route>
 
-        {/* INDEPENDENT ADMIN ROUTE GROUP (Does NOT use MainLayout) */}
-       {/* Dedicated Admin Router Shell Scope */}
-  {/* 🔒 Protected Admin Group */}
-    <Route element={<ProtectedRoute />}>
-      <Route path="/admin" element={<AdminLayout mode={mode} />}>
-        <Route path="dashboard" element={<AdminDashboard mode={mode} />} />
-        <Route path="hero-sections" element={<HeroCmsManager mode={mode} />} />
-        <Route path="home-sections" element={<HomeSectionCmsManager mode={mode} />} />
-        <Route path="feature-cards" element={<FeatureCardCmsManager mode={mode} />} />
-    </Route>
-    </Route>
-    
-      </Routes>
+          {/* 🔒 PROTECTED ADMIN GROUP */}
+          <Route element={<ProtectedRoute />}>
+            {/* FIXED: Passed toggleColorMode down as setMode to keep layout parameters safe */}
+            <Route path="/admin" element={<AdminLayout mode={mode} setMode={toggleColorMode} />}>
+              {/* FIXED: Added explicit index mapping to handle fallback layout tracking */}
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard mode={mode} />} />
+              <Route path="hero-sections" element={<HeroCmsManager mode={mode} />} />
+              <Route path="home-sections" element={<HomeSectionCmsManager mode={mode} />} />
+              <Route path="feature-cards" element={<FeatureCardCmsManager mode={mode} />} />
+            </Route>
+          </Route>
+          
+        </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );

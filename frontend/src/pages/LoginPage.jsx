@@ -44,7 +44,7 @@ export default function LoginPage({ mode }) {
         <DynamicForm
           mode={mode}
           title="Welcome Back"
-          submitUrl="http://127.0.0.1:8000/api/login"
+          submitUrl="http://127.0.0.1:8000/api/login/"
           successMessage="Login successful!"
           fields={loginFields}
           initialValues={{ email: '', password: '' }}

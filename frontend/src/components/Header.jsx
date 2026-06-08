@@ -104,6 +104,13 @@ export default function Header({ mode, toggleMode }) {
           >
             Register
           </Button>
+               <Button
+            color="inherit"
+            onClick={() => navigate('/Ai')}
+            sx={{ fontWeight: 'bold' }}
+          >
+            AI Search
+          </Button>
           <IconButton
             onClick={handleThemeToggleClick}
             color="primary"
